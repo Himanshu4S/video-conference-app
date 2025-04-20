@@ -1,29 +1,47 @@
-// server/index.js
 const express = require("express");
 const http = require("http");
-const cors = require("cors");
 const { Server } = require("socket.io");
+const cors = require("cors");
 
 const app = express();
-app.use(cors());
-
 const server = http.createServer(app);
 
+// const io = new Server(server, {
+//   cors: {
+//     origin: "http://localhost:3000", // React app
+//     methods: ["GET", "POST"],
+//   },
+//   transports: ["websocket", "polling"], // 👈 Important to allow both
+//   allowEIO3: true, // 👈 For compatibility
+// });
 const io = new Server(server, {
   cors: {
-    origin: "*",
+    origin: "http://localhost:3000", // your React frontend
     methods: ["GET", "POST"],
   },
+  // Don't restrict only websocket
 });
 
-io.on("connection", (socket) => {
-  console.log("A user connected: " + socket.id);
+app.use(cors());
 
-  socket.on("disconnect", () => {
-    console.log("User disconnected: " + socket.id);
+io.on("connection", (socket) => {
+  console.log("✅ A user connected:", socket.id);
+
+  socket.on("send-message", (message) => {
+    console.log("💬 Received message:", message);
+    io.emit("receive-message", message);
+  });
+
+  socket.on("disconnect", (reason) => {
+    console.log(`❌ User disconnected: ${socket.id} due to ${reason}`);
   });
 });
 
-server.listen(5000, () => {
-  console.log("Server running on port 5000");
+app.get("/", (req, res) => {
+  res.send("Server is running...");
+});
+
+const PORT = 5001;
+server.listen(PORT, "127.0.0.1", () => {
+  console.log(`🚀 Server listening on http://127.0.0.1:${PORT}`);
 });
