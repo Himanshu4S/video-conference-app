@@ -9,11 +9,12 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: [
-      "http://localhost:3000", // Allow local dev environment
-      "https://4a5d-49-43-179-191.ngrok-free.app", // Replace with your ngrok URL
+      "http://localhost:3000",
+      "http://192.168.29.54:3000", // Add this for mobile access if running frontend separately
+      "https://4e60-49-43-179-191.ngrok-free.app", // if using ngrok
     ],
     methods: ["GET", "POST"],
-    credentials: true, // Allow cookies for cross-origin
+    credentials: true,
   },
 });
 

@@ -1,7 +1,20 @@
 import { useEffect, useState, useRef } from "react";
 import { io } from "socket.io-client";
 
-const socket = io("http://localhost:5001", {
+const getBackendUrl = () => {
+  const { protocol, hostname } = window.location;
+  const backendPort = 5001; // your backend port
+
+  if (hostname.includes("ngrok-free.app")) {
+    return `${protocol}//${hostname}`;
+  } else if (hostname === "localhost" || hostname.startsWith("192.168.")) {
+    return `http://192.168.29.54:${backendPort}`;
+  } else {
+    return `${protocol}//${hostname}`;
+  }
+};
+
+const socket = io(getBackendUrl(), {
   transports: ["polling", "websocket"],
   reconnection: true,
 });
